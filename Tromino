@@ -1,0 +1,141 @@
+import java.util.ArrayList;
+import java.util.List;
+
+public class Tromino {
+
+
+	List<int[][]> allSubBoards = new ArrayList<int[][]>();
+	List<int[][]> finalBoard = new ArrayList<int[][]>();
+	int currentNum = 1;
+
+
+	public Tromino(int[][] board) {
+		tile(board);
+		printBoard(finalBoard, board[0].length);
+	}
+
+
+	public int[][] tile(int[][] board) {
+		int n = board[0].length;
+		int boardWithDefTile = 0;
+		if(n == 2) {
+			for(int i = 0; i < 2; i++) {
+				for( int j = 0; j < 2; j++) {
+					if(board[i][j] == -1) {
+						board[i][j] = currentNum;
+					}
+				}
+			}
+			currentNum++;
+			return board;
+		}
+		else {
+			//lower left corner
+			int[][] lowerLeft = new int[n/2][n/2];
+			for(int i = 0; i < n/2; i++) {
+				for(int j = 0; j < n/2; j++) {
+					if(board[i][j] == 0) boardWithDefTile = 1;
+					lowerLeft[i][j] = board[i][j];
+				}
+			}
+			//upper left corner
+			int[][] upperLeft = new int[n/2][n/2];
+			for(int i = 0; i < n/2; i++) {
+				for(int j = n/2; j < n; j++) {
+					if(board[i][j] == 0) boardWithDefTile = 2;
+					upperLeft[i][j-(n/2)] = board[i][j];
+				}
+			}
+
+			//lower right corner
+			int[][] lowerRight = new int [n/2][n/2];
+			for(int i = n/2; i < n; i++) {
+				for(int j = 0; j < n/2; j++) {
+					if(board[i][j] == 0) boardWithDefTile = 3;
+					lowerRight[i - (n/2)][j] = board[i][j];
+				}
+			}
+
+			//upper right corner
+			int[][] upperRight = new int[n/2][n/2];
+			for(int i = n/2; i < n; i++) {
+				for(int j = n/2; j < n; j++) {
+					if(board[i][j] == 0) boardWithDefTile = 4;
+					upperRight[i - (n/2)][j - (n/2)] = board[i][j];
+				}
+			}
+
+			//fill the boards with the first tromino (not incl the board with deficient tile)
+			if(boardWithDefTile == 1) {
+				upperLeft[(n/2)-1][0] = currentNum;
+				lowerRight[0][(n/2)-1] = currentNum;
+				upperRight[0][0] = currentNum;
+			} else if (boardWithDefTile == 2) {
+				lowerLeft[(n/2)-1][(n/2)-1] = currentNum;
+				lowerRight[0][(n/2)-1] = currentNum;
+				upperRight[0][0] = currentNum;
+			}
+			else if(boardWithDefTile == 3) {
+				upperLeft[(n/2)-1][0] = currentNum;
+				lowerLeft[(n/2)-1][(n/2)-1] = currentNum;
+				upperRight[0][0] = currentNum;
+			}
+			else if(boardWithDefTile == 4) {
+				upperLeft[(n/2)-1][0] = currentNum;
+				lowerLeft[(n/2)-1][(n/2)-1] = currentNum;
+				lowerRight[0][(n/2)-1] = currentNum;
+			}
+			currentNum++;
+
+			allSubBoards.add(lowerLeft);
+			allSubBoards.add(upperLeft);
+			allSubBoards.add(lowerRight);
+			allSubBoards.add(upperRight);
+
+			List<int[][]> temp = allSubBoards;
+
+			for(int[][] sub : temp) {
+				List
+				finalBoard.add(tile(sub));
+			}
+		}
+		return null;
+
+
+	}
+
+	public void printBoard(List<int[][]> list, int n) {
+		int[][] board = new int[n][n];
+		for(int i = 0; i < n; i++) {
+			for(int j = 0; j < n; j++) {
+				if(i < n/2 && j < n/2) {
+					board[i][j] = list.get(0)[i][j];
+				}
+				else if (i < n/2 && j >= n/2) {
+					board[i][j] = list.get(1)[i][j - (n/2)];
+				}
+				else if (i >= n/2 && j < n/2) {
+					board[i][j] = list.get(2)[i - (n/2)][j];
+				}
+				else if (i >= n/2 && j >= n/2) {
+					board[i][j] = list.get(3)[i - (n/2)][j - (n/2)];
+				}
+			}
+		}
+		String line = "";
+			for (int j = n-1; j >= 0; j--) {
+				for(int i = 0; i < n; i++) {
+				line = line + " " + board[i][j];
+				if(i == (n-1)) {
+					System.out.println(line);
+					line = "";
+				}
+			}
+		}
+
+		System.out.print("done");
+	}
+
+
+
+}
